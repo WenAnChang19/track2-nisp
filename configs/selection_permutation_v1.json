@@ -1,0 +1,159 @@
+{
+  "schema_version": 1,
+  "protocol_revision": 1,
+  "scope": "Development-only full alpha/layer-selection sex-stratified label-permutation diagnostic; not a conditional p-value",
+  "created_at_utc": "2026-10-05T02:06:36.165249+00:00",
+  "feature_bundle": "results/stage1-20261004T092357Z/features",
+  "expected_feature_source_fingerprint": "725a1d991273a4bc0632b40532516f72b46d7740bd746c42cae7f1dbb75fb682",
+  "development_splits": [
+    "train",
+    "val"
+  ],
+  "expected_development_speakers": 210,
+  "expected_heldout_speakers": 135,
+  "references": {
+    "layer_directory": "results/layers-cv-v2-20261005",
+    "layer_files_sha256": {
+      "protocol_lock.json": "e4beb78e4d74fe7e7d0af897a1bda71ee4f08b4aa89fff249cc402c97905f52f",
+      "locked_config.json": "ca52633b8ca7dd6f7be7e0887378a4b8fdff3637b080f8ca564764b576764654",
+      "layer_cv_metrics.json": "9c559d2d2d097fe96775158b09a3af07427143065168236e8941cbc95f0556cf",
+      "layer_selection.json": "aa4afc7fa9d93ed2c52b25c24166b945211b3d343c9de57e732d8699e738decf",
+      "selected_layer_settings.json": "a637c885a5cf5473b4a4b411fb7389455ea6f787896fa146792b027b23ab7a9a",
+      "independent-verification.json": "21250c4f08cfa22fc39ccf9a39bbd48ee7c830bf719f97cd6b68774091aa2ea1"
+    },
+    "baseline_directory": "results/baselines-height-cv-v1-20261004",
+    "baseline_files_sha256": {
+      "protocol_lock.json": "09b1e90ce66182f8d143d816e3fa88211ca645171864e974690bffe69069e357",
+      "cv_metrics.json": "88e58cfa0011f6dec75fcf56d1b32ff9b07ccfef27a95bfa63b77e7b3ac48bd0"
+    },
+    "prior_cv_reference": {
+      "directory": "results/bmi-cv-v2-20261004",
+      "protocol_lock_sha256": "738a7eba1beabf4d562db225756eafa177d57b7bcc86a0f7699c4b836f648f99",
+      "folds_json_sha256": "c97410d4d766d69a06f390711292ec98862c3c45766a17c00b4f4ce024b3407a",
+      "ordered_dev_ids_hash": "d85dfe5f33ff9f3deb1ddb73eac85c871d5746a79718b9ab1df4e6aefc53d84c",
+      "reuse_full_saved_fold_ids": true
+    }
+  },
+  "prior_cv_reference": {
+    "directory": "results/bmi-cv-v2-20261004",
+    "protocol_lock_sha256": "738a7eba1beabf4d562db225756eafa177d57b7bcc86a0f7699c4b836f648f99",
+    "folds_json_sha256": "c97410d4d766d69a06f390711292ec98862c3c45766a17c00b4f4ce024b3407a",
+    "ordered_dev_ids_hash": "d85dfe5f33ff9f3deb1ddb73eac85c871d5746a79718b9ab1df4e6aefc53d84c",
+    "reuse_full_saved_fold_ids": true
+  },
+  "targets": [
+    "bmi",
+    "height_cm"
+  ],
+  "target_units": {
+    "bmi": "kg/m²",
+    "height_cm": "cm"
+  },
+  "layers": [
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7,
+    8,
+    9,
+    10,
+    11,
+    12
+  ],
+  "alpha_grid": [
+    0.001,
+    0.01,
+    0.1,
+    1.0,
+    10.0,
+    100.0,
+    1000.0,
+    10000.0,
+    100000.0,
+    1000000.0,
+    10000000.0,
+    100000000.0,
+    1000000000.0,
+    10000000000.0,
+    100000000000.0,
+    1000000000000.0
+  ],
+  "alpha_selection": {
+    "independent_for_each_target_and_layer": true,
+    "metric": "mean_fold_mae",
+    "tie_tolerance": 1e-06,
+    "tie_break": "largest_alpha"
+  },
+  "layer_selection": {
+    "score": "mean_fold_mae_at_each_layers_selected_alpha",
+    "near_tie_absolute_mae_band": {
+      "bmi": 0.05,
+      "height_cm": 0.1
+    },
+    "eligible_rule": "score <= minimum_layer_score + target_band",
+    "preference_layer": 6,
+    "eligible_tie_break": [
+      "smallest absolute distance to layer 6",
+      "lower layer index"
+    ],
+    "interpretation": "Predetermined practical selection band; not statistical equivalence, confidence interval or independent-fold standard error; layer 6 preference is a fixed convention, not assumed scientific superiority",
+    "independent_for_each_target": true,
+    "raw_minimum_also_reported": true
+  },
+  "cv": {
+    "method": "RepeatedStratifiedKFold",
+    "stratify_by": "sex",
+    "n_splits": 5,
+    "n_repeats": 5,
+    "random_state": 42
+  },
+  "permutations": {
+    "n_random_per_target": 99,
+    "seed": 20261005,
+    "generator": "numpy default_rng(SeedSequence(seed).spawn(2)[target_index])",
+    "stratify_by": "sex",
+    "one_global_development_id_mapping_per_target_and_permutation_reused_across_all_layers_and_folds": true,
+    "include_identity_as_column_zero": true,
+    "store_full_mappings_and_sha256": true
+  },
+  "statistic": {
+    "gain": "mean_fold_mae_demographics - selected_layer_mean_fold_mae",
+    "positive_means": "selected audio model is better",
+    "also_report_raw_minimum_layer_gain": true,
+    "tail_count": "random gains >= observed gain - 1e-6",
+    "tail_tolerance": 1e-06,
+    "is_formal_p_value": false
+  },
+  "observed_reproduction": {
+    "all_24_layer_alpha_and_mean_mae_and_final_selections_match": true,
+    "mae_absolute_tolerance": 1e-09,
+    "fail_before_diagnostic_outputs_on_mismatch": true
+  },
+  "nesting_check": {
+    "alpha": 1000000000000.0,
+    "prediction_absolute_tolerance": 1e-06,
+    "mae_absolute_tolerance": 1e-06,
+    "records": 600,
+    "label_columns_per_record": 100,
+    "total_target_layer_fold_label_checks": 60000,
+    "all_pass_before_diagnostic_outputs": true
+  },
+  "protocol_lock": {
+    "save_before_any_fit": true,
+    "save_exact_config_bytes": true,
+    "include_full_fold_ids": true,
+    "include_source_and_reference_hashes": true,
+    "overwrite_allowed": false
+  },
+  "interpretation": "Same-sex label shuffle retains sex distribution but destroys age-target and other associations; descriptive selection-bias stress test, not proof of no leakage, causality or a conditional p-value.",
+  "out_of_scope": [
+    "test target parsing, predictions or metrics",
+    "retuning chosen settings based on permutations",
+    "new CV splits",
+    "feature extraction"
+  ],
+  "predefined_before_model_run": true
+}

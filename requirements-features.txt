@@ -1,0 +1,6 @@
+# Optional feature environment: best-effort dependencies, not a complete historical lock.
+# Install compatible torch/torchaudio separately for your hardware.
+-r requirements-cpu.txt
+transformers==4.57.6
+soundfile
+huggingface-hub

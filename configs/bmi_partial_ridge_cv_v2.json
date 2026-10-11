@@ -1,0 +1,129 @@
+{
+  "schema_version": 1,
+  "scope": "BMI three-model development CV with unpenalized demographics; no test evaluation",
+  "created_at_utc": "2026-10-04T13:53:05.420446+00:00",
+  "feature_bundle": "results/stage1-20261004T092357Z/features",
+  "development_splits": [
+    "train",
+    "val"
+  ],
+  "expected_development_speakers": 210,
+  "expected_heldout_speakers": 135,
+  "cv": {
+    "method": "RepeatedStratifiedKFold",
+    "stratify_by": "sex",
+    "n_splits": 5,
+    "n_repeats": 5,
+    "random_state": 42
+  },
+  "target": "bmi",
+  "ssl_layer": 12,
+  "models": [
+    "demographics",
+    "acoustic_demographics",
+    "ssl12_demographics"
+  ],
+  "demographics": [
+    "intercept",
+    "age",
+    "sex_Female0_Male1"
+  ],
+  "regularization": "OLS demographics unpenalized; training-fold StandardScaler on audio; residualize BOTH y and scaled X against training-fold C; Ridge only on residual audio",
+  "alpha_grid": [
+    0.001,
+    0.01,
+    0.1,
+    1.0,
+    10.0,
+    100.0,
+    1000.0,
+    10000.0,
+    100000.0,
+    1000000.0,
+    10000000.0,
+    100000000.0,
+    1000000000.0,
+    10000000000.0,
+    100000000000.0,
+    1000000000000.0
+  ],
+  "selection": {
+    "metric": "mean_fold_mae",
+    "tie_tolerance": 1e-06,
+    "tie_break": "largest_alpha"
+  },
+  "nesting_check": {
+    "alpha": 1000000000000.0,
+    "prediction_absolute_tolerance": 1e-06,
+    "mae_absolute_tolerance": 1e-06,
+    "require_all_folds_and_audio_models": true
+  },
+  "paired_comparison": {
+    "reference": "demographics",
+    "negative_means": "audio model has lower MAE",
+    "zero_tolerance": 1e-06,
+    "fold_standard_error_is_not_inferential": true
+  },
+  "permutation_diagnostic": {
+    "n_permutations": 99,
+    "random_state": 43,
+    "method": "shuffle BMI within sex across development speakers",
+    "repeat_alpha_selection": true,
+    "interpretation": "descriptive sanity diagnostic, NOT a leakage proof or formal conditional-on-age null test; preserves sex groups but destroys age-BMI relation"
+  },
+  "sex_diagnostic": {
+    "features": [
+      "mfcc",
+      "ssl12"
+    ],
+    "demographic_inputs": false,
+    "classifier": "LogisticRegression",
+    "C": 1.0,
+    "solver": "liblinear",
+    "max_iter": 2000,
+    "random_state": 44,
+    "metrics": [
+      "accuracy",
+      "balanced_accuracy"
+    ],
+    "failure_threshold": null,
+    "evaluation": "same saved development CV folds, out-of-fold predictions only",
+    "scaling": "fit StandardScaler on each training fold only",
+    "convergence_warning_policy": "fail diagnosis; do not silently report nonconverged classifier"
+  },
+  "out_of_scope": [
+    "test predictions or metrics",
+    "height",
+    "layer selection",
+    "mean/median or audio-only BMI models",
+    "bootstrap",
+    "subgroups",
+    "log BMI",
+    "feature extraction"
+  ],
+  "cv_scores_are": "development selection scores; optimistically biased by alpha selection; not final generalization estimates",
+  "future_layer_selection_requires_separate_prefrozen_protocol": true,
+  "predefined_before_model_run": true,
+  "protocol_revision": 2,
+  "supersedes_draft_config_sha256": "7f7411cea34dc3d98f0bc635fd3d9725eed80ee5bf39788219e38fb9232f2869",
+  "pre_fit_clarifications": [
+    "sex diagnosis uses same saved OOF folds with train-fold scaling",
+    "save full fold IDs and protocol lock before first fit",
+    "reject demographic rank deficiency and logistic convergence warnings"
+  ],
+  "protocol_lock": {
+    "write_before_any_fit": true,
+    "overwrite_allowed": false,
+    "fields": [
+      "raw_config_sha256",
+      "canonical_config_hash",
+      "source_code_sha256",
+      "feature_source_fingerprint",
+      "ordered_dev_ids_hash",
+      "full_fold_train_and_validation_ids",
+      "library_versions"
+    ],
+    "metrics_reference_lock": true
+  },
+  "demographic_rank_deficiency_policy": "fail if training design rank is less than 3"
+}

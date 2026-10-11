@@ -1,0 +1,179 @@
+{
+  "schema_version": 1,
+  "protocol_revision": 2,
+  "scope": "Local CPU 12-layer SSL-plus-unpenalized-demographics development CV for BMI and height; no test or final fit",
+  "created_at_utc": "2026-10-05T01:41:09.844918+00:00",
+  "feature_bundle": "results/stage1-20261004T092357Z/features",
+  "expected_feature_source_fingerprint": "725a1d991273a4bc0632b40532516f72b46d7740bd746c42cae7f1dbb75fb682",
+  "development_splits": [
+    "train",
+    "val"
+  ],
+  "expected_development_speakers": 210,
+  "expected_heldout_speakers": 135,
+  "prior_cv_reference": {
+    "directory": "results/bmi-cv-v2-20261004",
+    "protocol_lock_sha256": "738a7eba1beabf4d562db225756eafa177d57b7bcc86a0f7699c4b836f648f99",
+    "folds_json_sha256": "c97410d4d766d69a06f390711292ec98862c3c45766a17c00b4f4ce024b3407a",
+    "ordered_dev_ids_hash": "d85dfe5f33ff9f3deb1ddb73eac85c871d5746a79718b9ab1df4e6aefc53d84c",
+    "reuse_full_saved_fold_ids": true
+  },
+  "layer12_reference": {
+    "directory": "results/baselines-height-cv-v1-20261004",
+    "file_sha256": {
+      "protocol_lock.json": "09b1e90ce66182f8d143d816e3fa88211ca645171864e974690bffe69069e357",
+      "cv_metrics.json": "88e58cfa0011f6dec75fcf56d1b32ff9b07ccfef27a95bfa63b77e7b3ac48bd0",
+      "cv_predictions.csv": "66cfc0eade3d5008aed57e395309d988077ee1a87490b8e4a11bc9e6e0b52d2b",
+      "independent-verification.json": "180d7c0707a69ab19c7ef07d92d5cd6a60406524e2fbd076177fce473d5c0da0"
+    },
+    "model": "ssl12_demographics",
+    "require_same_selected_alpha": true,
+    "mae_absolute_tolerance": 1e-09,
+    "prediction_absolute_tolerance": 1e-08,
+    "keys": [
+      "target",
+      "speaker_id",
+      "repeat",
+      "fold"
+    ],
+    "fail_before_other_layers_or_selection_on_mismatch": true,
+    "reference_models": [
+      "ssl12_demographics",
+      "demographics"
+    ],
+    "require_exact_oof_key_coverage": true,
+    "require_same_demographic_mean_fold_mae": true,
+    "require_same_demographic_keyed_oof_predictions": true
+  },
+  "cv": {
+    "method": "RepeatedStratifiedKFold",
+    "stratify_by": "sex",
+    "n_splits": 5,
+    "n_repeats": 5,
+    "random_state": 42
+  },
+  "targets": [
+    "bmi",
+    "height_cm"
+  ],
+  "target_units": {
+    "bmi": "kg/m²",
+    "height_cm": "cm"
+  },
+  "layers": [
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7,
+    8,
+    9,
+    10,
+    11,
+    12
+  ],
+  "execution_order": [
+    12,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7,
+    8,
+    9,
+    10,
+    11
+  ],
+  "layer_indexing": "speaker_features.ssl[:, layer-1, :]; transformer layers 1..12; embedding layer 0 excluded",
+  "model": "ssl_demographics",
+  "inputs": [
+    "one WavLM layer: 768 features",
+    "intercept",
+    "age",
+    "sex_Female0_Male1"
+  ],
+  "regularization": "OLS demographics unpenalized; training-fold StandardScaler on audio; residualize BOTH y and scaled X against training-fold C; Ridge only on residual audio",
+  "alpha_grid": [
+    0.001,
+    0.01,
+    0.1,
+    1.0,
+    10.0,
+    100.0,
+    1000.0,
+    10000.0,
+    100000.0,
+    1000000.0,
+    10000000.0,
+    100000000.0,
+    1000000000.0,
+    10000000000.0,
+    100000000000.0,
+    1000000000000.0
+  ],
+  "alpha_selection": {
+    "independent_for_each_target_and_layer": true,
+    "metric": "mean_fold_mae",
+    "tie_tolerance": 1e-06,
+    "tie_break": "largest_alpha"
+  },
+  "layer_selection": {
+    "score": "mean_fold_mae_at_each_layers_selected_alpha",
+    "near_tie_absolute_mae_band": {
+      "bmi": 0.05,
+      "height_cm": 0.1
+    },
+    "eligible_rule": "score <= minimum_layer_score + target_band",
+    "preference_layer": 6,
+    "eligible_tie_break": [
+      "smallest absolute distance to layer 6",
+      "lower layer index"
+    ],
+    "interpretation": "Predetermined practical selection band; not statistical equivalence, confidence interval or independent-fold standard error; layer 6 preference is a fixed convention, not assumed scientific superiority",
+    "independent_for_each_target": true,
+    "raw_minimum_also_reported": true
+  },
+  "paired_comparison": {
+    "reference": "demographics",
+    "negative_means": "audio model has lower MAE",
+    "zero_tolerance": 1e-06,
+    "fold_standard_error_is_not_inferential": true
+  },
+  "nesting_check": {
+    "alpha": 1000000000000.0,
+    "prediction_absolute_tolerance": 1e-06,
+    "mae_absolute_tolerance": 1e-06,
+    "reference": "same training-fold unpenalized demographic OLS",
+    "expected_checks": 600,
+    "require_all_pass_before_result_metrics": true
+  },
+  "protocol_lock": {
+    "save_before_any_fit": true,
+    "save_exact_config_bytes": true,
+    "include_full_fold_ids": true,
+    "include_source_file_hashes": true,
+    "include_prior_reference_hashes": true,
+    "overwrite_allowed": false
+  },
+  "cv_scores_are": "development selection scores; optimistic from both alpha and layer selection; not final generalization estimates",
+  "fold_standard_error_used_for_inference": false,
+  "height_interpretation": "auxiliary diagnostic with weak expected conditional signal; success/failure is not proof of physiology or pipeline correctness",
+  "out_of_scope": [
+    "test predictions or metrics",
+    "final 210-person fit",
+    "bootstrap",
+    "subgroup modeling",
+    "audio-only 12-layer search",
+    "concatenated layers",
+    "learned layer weights",
+    "log targets",
+    "feature extraction",
+    "rerunning permutation or sex diagnosis"
+  ],
+  "predefined_before_model_run": true,
+  "pre_fit_amendment": "Add direct demographics OLS mean MAE and keyed OOF reproduction for both targets before other layers; no layer results have been fitted or inspected; all selection rules unchanged."
+}

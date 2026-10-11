@@ -1,0 +1,177 @@
+{
+  "schema_version": 1,
+  "protocol_revision": 1,
+  "scope": "Locked two-stage official test prediction then scoring, paired bootstrap and descriptive sex/mother-language groups",
+  "created_at_utc": "2026-10-05T02:06:36.165412+00:00",
+  "feature_bundle": "results/stage1-20261004T092357Z/features",
+  "expected_feature_source_fingerprint": "725a1d991273a4bc0632b40532516f72b46d7740bd746c42cae7f1dbb75fb682",
+  "development_splits": [
+    "train",
+    "val"
+  ],
+  "expected_development_speakers": 210,
+  "expected_test_speakers": 135,
+  "references": {
+    "layer_directory": "results/layers-cv-v2-20261005",
+    "layer_files_sha256": {
+      "protocol_lock.json": "e4beb78e4d74fe7e7d0af897a1bda71ee4f08b4aa89fff249cc402c97905f52f",
+      "locked_config.json": "ca52633b8ca7dd6f7be7e0887378a4b8fdff3637b080f8ca564764b576764654",
+      "layer_cv_metrics.json": "9c559d2d2d097fe96775158b09a3af07427143065168236e8941cbc95f0556cf",
+      "layer_selection.json": "aa4afc7fa9d93ed2c52b25c24166b945211b3d343c9de57e732d8699e738decf",
+      "selected_layer_settings.json": "a637c885a5cf5473b4a4b411fb7389455ea6f787896fa146792b027b23ab7a9a",
+      "independent-verification.json": "21250c4f08cfa22fc39ccf9a39bbd48ee7c830bf719f97cd6b68774091aa2ea1"
+    },
+    "baseline_directory": "results/baselines-height-cv-v1-20261004",
+    "baseline_files_sha256": {
+      "protocol_lock.json": "09b1e90ce66182f8d143d816e3fa88211ca645171864e974690bffe69069e357",
+      "cv_metrics.json": "88e58cfa0011f6dec75fcf56d1b32ff9b07ccfef27a95bfa63b77e7b3ac48bd0"
+    },
+    "prior_cv_reference": {
+      "directory": "results/bmi-cv-v2-20261004",
+      "protocol_lock_sha256": "738a7eba1beabf4d562db225756eafa177d57b7bcc86a0f7699c4b836f648f99",
+      "folds_json_sha256": "c97410d4d766d69a06f390711292ec98862c3c45766a17c00b4f4ce024b3407a",
+      "ordered_dev_ids_hash": "d85dfe5f33ff9f3deb1ddb73eac85c871d5746a79718b9ab1df4e6aefc53d84c",
+      "reuse_full_saved_fold_ids": true
+    }
+  },
+  "targets": [
+    "bmi",
+    "height_cm"
+  ],
+  "target_units": {
+    "bmi": "kg/m²",
+    "height_cm": "cm"
+  },
+  "model_order": [
+    "mean",
+    "demographics",
+    "mfcc_demographics",
+    "selected_ssl_demographics",
+    "ssl12_demographics"
+  ],
+  "input_whitelist": {
+    "mean": [],
+    "demographics": [
+      "intercept",
+      "age",
+      "sex_Female0_Male1"
+    ],
+    "mfcc_demographics": [
+      "MFCC26",
+      "intercept",
+      "age",
+      "sex_Female0_Male1"
+    ],
+    "selected_ssl_demographics": [
+      "one selected SSL layer 768",
+      "intercept",
+      "age",
+      "sex_Female0_Male1"
+    ],
+    "ssl12_demographics": [
+      "SSL layer12 768",
+      "intercept",
+      "age",
+      "sex_Female0_Male1"
+    ]
+  },
+  "settings_by_target": {
+    "bmi": {
+      "selected_layer": 5,
+      "selected_ssl_alpha": 1000.0,
+      "mfcc_alpha": 1000000000000.0,
+      "ssl12_alpha": 1000.0
+    },
+    "height_cm": {
+      "selected_layer": 3,
+      "selected_ssl_alpha": 1000.0,
+      "mfcc_alpha": 100.0,
+      "ssl12_alpha": 1000.0
+    }
+  },
+  "fit": "All five models refit on all development210 only; demographics OLS unpenalized; audio training-only StandardScaler and double residualization then Ridge only on residual audio.",
+  "stages": {
+    "prepare_inputs": "Write physically label-free predictors.csv; development_targets.csv contains only210 development labels; projections never access test target values. Keep source evidence hashes.",
+    "predict": "Load only predictors.csv, development_targets.csv and validated feature NPZ; no original speakers CSV target fields. Produce both-target test predictions, ID/finite/range audit, save exact predictions SHA and source/config/view lock before scoring.",
+    "score": "Only after immutable saved prediction hash/source/config hashes and label-free audit all pass, join test BMI/height by exact speaker IDs; do not fit or choose settings. Refuse overwrite.",
+    "test_evaluation_once": true
+  },
+  "prediction_quality": {
+    "require_exact_test_ids": true,
+    "require_finite": true,
+    "range_audit": "Only describe min/max relative to development target min/max; no clipping, parameter change or exclusion based on test values or predictions."
+  },
+  "primary_comparisons": [
+    {
+      "target": "bmi",
+      "candidate": "selected_ssl_demographics",
+      "reference": "demographics",
+      "statistic": "MAE(candidate)-MAE(reference)",
+      "negative_means": "selected SSL is better"
+    },
+    {
+      "target": "height_cm",
+      "candidate": "selected_ssl_demographics",
+      "reference": "demographics",
+      "statistic": "MAE(candidate)-MAE(reference)",
+      "negative_means": "selected SSL is better"
+    }
+  ],
+  "bootstrap": {
+    "n_resamples": 10000,
+    "seed": 2026100503,
+    "unit": "speaker",
+    "same_draws_for_all_models_and_targets": true,
+    "method": "paired percentile on absolute-error differences",
+    "individual_confidence": 0.95,
+    "two_target_bonferroni_confidence": 0.975,
+    "individual_support_rule": "primary delta MAE upper 95% percentile endpoint < 0",
+    "family_adjusted_support_rule": "primary delta MAE upper97.5% percentile endpoint <0; two target comparisons form one family",
+    "uncertainty_scope": "Conditional on fitted models and this test population; does not include training variability or full selection-process uncertainty."
+  },
+  "secondary_comparisons": [
+    {
+      "candidate": "selected_ssl_demographics",
+      "reference": "mfcc_demographics"
+    },
+    {
+      "candidate": "ssl12_demographics",
+      "reference": "demographics"
+    },
+    {
+      "candidate": "selected_ssl_demographics",
+      "reference": "ssl12_demographics"
+    }
+  ],
+  "secondary_interpretation": "95% paired intervals descriptive; no additional family-level confirmatory claim",
+  "group_analysis": {
+    "fields": [
+      "sex",
+      "language"
+    ],
+    "metrics": [
+      "n",
+      "mae",
+      "rmse",
+      "delta_mae_vs_demographics"
+    ],
+    "no_group_model_selection": true,
+    "small_group_note": "Report all counts; small groups unstable, no subgroup significance claims or group-wise tuning."
+  },
+  "expectations_before_test": "Development gain can shrink due to alpha/layer selection and distribution change; no numerical forecast of test gain. Report both targets and all locked models regardless of direction.",
+  "scientific_wording": "Speech features associated with BMI/height; no causal or layer-specific physiological interpretation. Language, channel/session and recording conditions remain possible confounds.",
+  "protocol_lock": {
+    "save_before_any_fit": true,
+    "save_exact_config_bytes": true,
+    "include_source_and_reference_hashes": true,
+    "overwrite_allowed": false
+  },
+  "out_of_scope": [
+    "test-driven layer/alpha selection",
+    "post-test model additions",
+    "causal interpretation",
+    "additional feature extraction",
+    "GPU use"
+  ],
+  "predefined_before_test_targets_read": true
+}

@@ -1,0 +1,144 @@
+{
+  "schema_version": 1,
+  "protocol_revision": 1,
+  "scope": "Local CPU constant/audio-only baselines and fixed-layer12 BMI+height development CV; no layer selection or test",
+  "created_at_utc": "2026-10-04T14:19:49.164540+00:00",
+  "feature_bundle": "results/stage1-20261004T092357Z/features",
+  "expected_feature_source_fingerprint": "725a1d991273a4bc0632b40532516f72b46d7740bd746c42cae7f1dbb75fb682",
+  "development_splits": [
+    "train",
+    "val"
+  ],
+  "expected_development_speakers": 210,
+  "expected_heldout_speakers": 135,
+  "prior_cv_reference": {
+    "directory": "results/bmi-cv-v2-20261004",
+    "protocol_lock_sha256": "738a7eba1beabf4d562db225756eafa177d57b7bcc86a0f7699c4b836f648f99",
+    "folds_json_sha256": "c97410d4d766d69a06f390711292ec98862c3c45766a17c00b4f4ce024b3407a",
+    "ordered_dev_ids_hash": "d85dfe5f33ff9f3deb1ddb73eac85c871d5746a79718b9ab1df4e6aefc53d84c",
+    "reuse_full_saved_fold_ids": true
+  },
+  "cv": {
+    "method": "RepeatedStratifiedKFold",
+    "stratify_by": "sex",
+    "n_splits": 5,
+    "n_repeats": 5,
+    "random_state": 42
+  },
+  "run_order": [
+    "bmi",
+    "height_cm"
+  ],
+  "target_units": {
+    "bmi": "kg/m²",
+    "height_cm": "cm"
+  },
+  "ssl_layer": 12,
+  "models": [
+    "mean",
+    "median",
+    "demographics",
+    "acoustic_only",
+    "ssl12_only",
+    "acoustic_demographics",
+    "ssl12_demographics"
+  ],
+  "inputs": {
+    "mean": [],
+    "median": [],
+    "demographics": [
+      "intercept",
+      "age",
+      "sex_Female0_Male1"
+    ],
+    "acoustic_only": [
+      "MFCC26"
+    ],
+    "ssl12_only": [
+      "WavLM12_768"
+    ],
+    "acoustic_demographics": [
+      "MFCC26",
+      "age",
+      "sex_Female0_Male1"
+    ],
+    "ssl12_demographics": [
+      "WavLM12_768",
+      "age",
+      "sex_Female0_Male1"
+    ]
+  },
+  "constant_estimators": "each training fold target mean or median only",
+  "audio_only_regularization": "training-fold audio standardization; ordinary Ridge with unpenalized intercept; no age/sex input or residualization",
+  "combined_regularization": "OLS demographics unpenalized; training-fold StandardScaler on audio; residualize BOTH y and scaled X against training-fold C; Ridge only on residual audio",
+  "alpha_grid": [
+    0.001,
+    0.01,
+    0.1,
+    1.0,
+    10.0,
+    100.0,
+    1000.0,
+    10000.0,
+    100000.0,
+    1000000.0,
+    10000000.0,
+    100000000.0,
+    1000000000.0,
+    10000000000.0,
+    100000000000.0,
+    1000000000000.0
+  ],
+  "selection": {
+    "metric": "mean_fold_mae",
+    "tie_tolerance": 1e-06,
+    "tie_break": "largest_alpha"
+  },
+  "paired_comparison": {
+    "reference": "demographics",
+    "negative_means": "audio model has lower MAE",
+    "zero_tolerance": 1e-06,
+    "fold_standard_error_is_not_inferential": true
+  },
+  "nesting_check": {
+    "alpha": 1000000000000.0,
+    "prediction_absolute_tolerance": 1e-06,
+    "mae_absolute_tolerance": 1e-06,
+    "audio_only_reference": "training target mean",
+    "combined_reference": "same training population OLS",
+    "require_all_models_folds_targets": true
+  },
+  "bmi_reproduction": {
+    "prior_models": [
+      "demographics",
+      "acoustic_demographics",
+      "ssl12_demographics"
+    ],
+    "require_same_selected_alpha": true,
+    "mae_absolute_tolerance": 1e-09,
+    "prediction_absolute_tolerance": 1e-08,
+    "fail_before_height_on_mismatch": true
+  },
+  "protocol_lock": {
+    "save_before_any_fit": true,
+    "save_exact_config_bytes": true,
+    "include_full_fold_ids": true,
+    "include_source_file_hashes": true,
+    "include_prior_reference_hashes": true,
+    "overwrite_allowed": false
+  },
+  "cv_scores_are": "development selection scores; optimistically biased by alpha selection; not final generalization estimates",
+  "fold_standard_error_used_for_inference": false,
+  "height_interpretation": "auxiliary diagnostic with weak expected conditional signal; success/failure is not proof of physiology or pipeline correctness",
+  "out_of_scope": [
+    "test predictions or metrics",
+    "final 210-person fit",
+    "layer selection",
+    "bootstrap",
+    "subgroup modeling",
+    "log targets",
+    "feature extraction",
+    "rerunning prior BMI permutation/sex diagnosis"
+  ],
+  "predefined_before_model_run": true
+}

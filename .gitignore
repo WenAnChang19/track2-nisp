@@ -1,0 +1,36 @@
+# Real data, model weights, and generated experiment outputs
+data/
+models/
+features/
+results/
+reports/
+*.npz
+*.npy
+*.wav
+*.pt
+*.pth
+*.bin
+*.joblib
+*.pkl
+*predictions*.csv
+*spkrinfo*
+*spkrID*
+# Local environments and caches
+.venv*/
+venv/
+__pycache__/
+*.py[cod]
+.cache/
+.pytest_cache/
+.DS_Store
+.env
+.env.*
+*.log
+
+# Individual-level input views
+**/speakers.csv
+**/development_targets.csv
+**/predictors.csv
+**/test_scored_predictions.csv
+**/test_predictions.csv
+**/validated_features.npz
